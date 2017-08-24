@@ -11,7 +11,7 @@ import Alamofire
 
 public class RxAlamofireObjectMapper {
     
-    class Configuration {
+    public class Configuration {
         
         var networkError: Error?
         var statusCodeErrors = [Int:Error]()
@@ -25,7 +25,7 @@ public class RxAlamofireObjectMapper {
         internal init() { }
     }
     
-    static let config = Configuration()
+    public static let config = Configuration()
 
     private init() { }
 }
