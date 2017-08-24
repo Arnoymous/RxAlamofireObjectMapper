@@ -10,46 +10,6 @@ import Alamofire
 import RxSwift
 import ObjectMapper
 
-extension Array where Element == [String:Any] {
-    
-    func mapToObjectArray<T: Mappable>(withType type: T.Type? = nil, context: MapContext?) -> [T] {
-        let mapper = Mapper<T>()
-        mapper.context = context
-        return mapper.mapArray(JSONArray: self as [[String:Any]])
-    }
-}
-
-extension Dictionary where Key == String, Value == Any {
-    
-    func mapToObject<T: Mappable>(withType type: T.Type? = nil, context: MapContext?) -> T? {
-        let mapper = Mapper<T>()
-        mapper.context = context
-        return mapper.map(JSON: self)
-    }
-}
-
-extension Observable where Element == [String:Any] {
-    
-    public func mapToObject<T: Mappable>(withType type: T.Type? = nil, context: MapContext?, mapError: Error) -> Observable<T> {
-        return self.flatMap{ JSON -> Observable<T> in
-            if let result = JSON.mapToObject(withType: type, context: context) {
-                return .just(result)
-            } else {
-                return .error(mapError)
-            }
-        }
-    }
-}
-
-extension Observable where Element == [[String:Any]] {
-    
-    public func mapToObjectArray<T: Mappable>(withType type: T.Type? = nil, context: MapContext?) -> Observable<[T]> {
-        return self.map{ JSONArray -> [T] in
-            return JSONArray.mapToObjectArray(withType: type, context: context)
-        }
-    }
-}
-
 extension Observable where Element:DataRequest {
     
     private func string(of value: Any?) -> String {
@@ -281,3 +241,42 @@ extension Result {
     }
 }
 
+extension Array where Element == [String:Any] {
+    
+    func mapToObjectArray<T: Mappable>(withType type: T.Type? = nil, context: MapContext?) -> [T] {
+        let mapper = Mapper<T>()
+        mapper.context = context
+        return mapper.mapArray(JSONArray: self as [[String:Any]])
+    }
+}
+
+extension Dictionary where Key == String, Value == Any {
+    
+    func mapToObject<T: Mappable>(withType type: T.Type? = nil, context: MapContext?) -> T? {
+        let mapper = Mapper<T>()
+        mapper.context = context
+        return mapper.map(JSON: self)
+    }
+}
+
+extension Observable where Element == [String:Any] {
+    
+    public func mapToObject<T: Mappable>(withType type: T.Type? = nil, context: MapContext?, mapError: Error) -> Observable<T> {
+        return self.flatMap{ JSON -> Observable<T> in
+            if let result = JSON.mapToObject(withType: type, context: context) {
+                return .just(result)
+            } else {
+                return .error(mapError)
+            }
+        }
+    }
+}
+
+extension Observable where Element == [[String:Any]] {
+    
+    public func mapToObjectArray<T: Mappable>(withType type: T.Type? = nil, context: MapContext?) -> Observable<[T]> {
+        return self.map{ JSONArray -> [T] in
+            return JSONArray.mapToObjectArray(withType: type, context: context)
+        }
+    }
+}
