@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'RxAlamofireObjectMapper_Example' do
+  pod 'RxAlamofireObjectMapper', :path => '../'
+
+  target 'RxAlamofireObjectMapper_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
