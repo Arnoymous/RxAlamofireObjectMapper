@@ -13,10 +13,10 @@ public class RxAlamofireObjectMapper {
     
     public class Configuration {
         
-        var networkError: Error?
-        var statusCodeErrors = [Int:Error]()
+        public var networkError: Error?
+        public var statusCodeErrors = [Int:Error]()
         
-        var JSONHandler: (
+        public var JSONHandler: (
             json:((Result<Any>, Any?, Int?)->Result<Any>?)?,
             object:((Result<[String:Any]>, Any?, Int?)->Result<[String:Any]>?)?,
             objectArray:((Result<[[String:Any]]>, Any?, Int?)->Result<[[String:Any]]>?)?
