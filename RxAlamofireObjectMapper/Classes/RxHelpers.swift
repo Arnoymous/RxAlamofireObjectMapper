@@ -54,7 +54,7 @@ extension Observable where Element:DataRequest {
     
     private func string(of value: Any?) -> String {
         if let value = value {
-            if let string = (value as? CustomStringConvertible)?.description {
+            if let string = (value as? CustomStringConvertible)?.description, !(value is [String:Any]) && !(value is [[String:Any]]) {
                 return string
             } else if let jsonData = try? JSONSerialization.data(withJSONObject: value, options: .prettyPrinted),
                 let jsonString = String(bytes: jsonData, encoding: .utf8) {
@@ -72,7 +72,6 @@ extension Observable where Element:DataRequest {
     private func debugRequest<T>(_ request: URLRequest?, result: Result<T>) {
         if let request = request, RxAlamofireObjectMapper.config.debug {
             print("\n******** Request ********")
-            
             print("method:\(request.httpMethod ?? "")")
             print("url:\(request.url?.absoluteString ?? "")")
             print("headers:\(string(of: request.allHTTPHeaderFields))")
