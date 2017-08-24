@@ -52,6 +52,24 @@ extension Observable where Element == [[String:Any]] {
 
 extension Observable where Element:DataRequest {
     
+    private func debugRequest<T>(_ request: URLRequest?, result: Result<T>) {
+        if let request = request, RxAlamofireObjectMapper.config.debug {
+            print("\n******** Request ********")
+            
+            print("method:\(request.httpMethod ?? "")")
+            print("url:\(request.url?.absoluteString ?? "")")
+            print("headers:\(request.allHTTPHeaderFields?.string ?? "")")
+            print("******** Result ********")
+            switch result {
+            case .success(let value):
+                print("result: \(value)")
+            case .failure(let error):
+                print("error:\(error.localizedDescription)")
+            }
+            print("*************************\n")
+        }
+    }
+    
     private func getServerError(fromStatusCode code: Int?, errors: [Int:Error]) -> Error? {
         if let code = code {
             if let error = errors[code] {
@@ -207,7 +225,9 @@ extension Observable where Element:DataRequest {
                     }
                     return requestResult
                 }
-                observer.on(getResult().event)
+                let requestResult = getResult()
+                self.debugRequest(response.request, result: requestResult)
+                observer.on(requestResult.event)
                 observer.onCompleted()
             })
             return Disposables.create {
@@ -237,6 +257,18 @@ extension Result {
             return .next(object)
         case .failure(let error):
             return .error(error)
+        }
+    }
+}
+
+
+extension Dictionary {
+    internal var string: String {
+        if let jsonData = try? JSONSerialization.data(withJSONObject: self, options: .prettyPrinted),
+            let jsonString = String(bytes: jsonData, encoding: .utf8) {
+            return jsonString
+        } else {
+            return "\(self)"
         }
     }
 }

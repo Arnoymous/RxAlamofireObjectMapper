@@ -13,6 +13,8 @@ public class RxAlamofireObjectMapper {
     
     public class Configuration {
         
+        public var debug: Bool = false
+        
         public var networkError: Error?
         public var statusCodeErrors = [Int:Error]()
         
