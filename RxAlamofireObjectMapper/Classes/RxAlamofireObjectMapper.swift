@@ -1,0 +1,31 @@
+//
+//  RxAlamofireObjectMapper.swift
+//  Pods
+//
+//  Created by Arnaud Dorgans on 24/08/2017.
+//
+//
+
+import UIKit
+import Alamofire
+
+public class RxAlamofireObjectMapper {
+    
+    class Configuration {
+        
+        var networkError: Error?
+        var statusCodeErrors = [Int:Error]()
+        
+        var JSONHandler: (
+            json:((Result<Any>, Any?, Int?)->Result<Any>?)?,
+            object:((Result<[String:Any]>, Any?, Int?)->Result<[String:Any]>?)?,
+            objectArray:((Result<[[String:Any]]>, Any?, Int?)->Result<[[String:Any]]>?)?
+            ) = (nil, nil, nil)
+        
+        internal init() { }
+    }
+    
+    static let config = Configuration()
+
+    private init() { }
+}

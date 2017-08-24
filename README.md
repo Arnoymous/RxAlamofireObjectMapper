@@ -22,7 +22,7 @@ pod "RxAlamofireObjectMapper"
 
 ## Author
 
-Arnoymous, ineox@me.com
+Arnoymous, arnaud.dorgans@gmail.com
 
 ## License
 
