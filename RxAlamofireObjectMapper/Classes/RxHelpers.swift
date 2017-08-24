@@ -52,24 +52,35 @@ extension Observable where Element == [[String:Any]] {
 
 extension Observable where Element:DataRequest {
     
+    private func string(of value: Any?) -> String {
+        if let value = value {
+            if let string = (value as? CustomStringConvertible)?.description {
+                return string
+            } else if let jsonData = try? JSONSerialization.data(withJSONObject: value, options: .prettyPrinted),
+                let jsonString = String(bytes: jsonData, encoding: .utf8) {
+                return jsonString
+            } else if let data = value as? Data,
+                let dataString = String(data: data, encoding: .utf8) {
+                return dataString
+            } else {
+                return "\(value)"
+            }
+        }
+        return ""
+    }
+    
     private func debugRequest<T>(_ request: URLRequest?, result: Result<T>) {
         if let request = request, RxAlamofireObjectMapper.config.debug {
             print("\n******** Request ********")
             
             print("method:\(request.httpMethod ?? "")")
             print("url:\(request.url?.absoluteString ?? "")")
-            print("headers:\(request.allHTTPHeaderFields?.string ?? "")")
-            if let body = request.httpBody {
-                if let json = try? JSONSerialization.jsonObject(with: body, options: .allowFragments) {
-                    print("parameters:\((json as? [String:Any])?.string ?? json)")
-                } else if let data = String(data: body, encoding: .utf8) {
-                    print("parameters:\(data)")
-                }
-            }
+            print("headers:\(string(of: request.allHTTPHeaderFields))")
+            print("parameters:\(self.string(of: request.httpBody))")
             print("******** Result ********")
             switch result {
             case .success(let value):
-                print("result: \(value)")
+                print("result: \(self.string(of: value))")
             case .failure(let error):
                 print("error:\(error.localizedDescription)")
             }
@@ -103,12 +114,15 @@ extension Observable where Element:DataRequest {
         return Observable<HTTPURLResponse>.create({ (observer:AnyObserver<HTTPURLResponse>) -> Disposable in
             let request = request.response(completionHandler: { (response:DefaultDataResponse) in
                 let serverError = self.getServerError(fromStatusCode: response.response?.statusCode, errors: statusCodeError)
-                if let result = response.response, (statusCodes.contains(result.statusCode) || statusCodes.isEmpty) && serverError == nil {
-                    observer.onNext(result)
-                    observer.onCompleted()
+                var result: Result<HTTPURLResponse>
+                if let response = response.response, (statusCodes.contains(response.statusCode) || statusCodes.isEmpty) && serverError == nil {
+                    result = .success(response)
                 } else {
-                    observer.onError(serverError ?? error)
+                    result = .failure(serverError ?? error)
                 }
+                self.debugRequest(response.request, result: result)
+                observer.on(result.event)
+                observer.onCompleted()
             })
             return Disposables.create {
                 request.cancel()
@@ -268,14 +282,3 @@ extension Result {
     }
 }
 
-
-extension Dictionary {
-    internal var string: String {
-        if let jsonData = try? JSONSerialization.data(withJSONObject: self, options: .prettyPrinted),
-            let jsonString = String(bytes: jsonData, encoding: .utf8) {
-            return jsonString
-        } else {
-            return "\(self)"
-        }
-    }
-}
