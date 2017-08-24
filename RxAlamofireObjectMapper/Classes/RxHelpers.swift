@@ -59,6 +59,13 @@ extension Observable where Element:DataRequest {
             print("method:\(request.httpMethod ?? "")")
             print("url:\(request.url?.absoluteString ?? "")")
             print("headers:\(request.allHTTPHeaderFields?.string ?? "")")
+            if let body = request.httpBody {
+                if let json = try? JSONSerialization.jsonObject(with: body, options: .allowFragments) {
+                    print("parameters:\((json as? [String:Any])?.string ?? json)")
+                } else if let data = String(data: body, encoding: .utf8) {
+                    print("parameters:\(data)")
+                }
+            }
             print("******** Result ********")
             switch result {
             case .success(let value):
