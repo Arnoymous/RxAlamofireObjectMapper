@@ -16,8 +16,9 @@ public class RxAlamofireObjectMapper {
         public var debug: Bool = false
         
         public var networkError: Error?
-        public var statusCodeErrors = [Int:Error]()
-        public var statusCodeSuccess = [Int]()
+        
+        public var defaultStatusCodeErrors = [Int:Error]()
+        public var defaultResponseStatusCodes = [Int]()
         
         public var JSONHandler: (
             all:((Result<Any>, Any?, Int?)->Result<Any>?)?,

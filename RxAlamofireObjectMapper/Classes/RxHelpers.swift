@@ -13,21 +13,23 @@ import ObjectMapper
 extension Observable where Element:DataRequest {
     
     private func string(of value: Any?) -> String {
-        if let value = value {
-            if let data = value as? Data,
-                let dataString = String(data: data, encoding: .utf8) {
-                return dataString
+        if var value = value {
+            if let data = value as? Data {
+                if let JSON = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
+                    value = JSON
+                } else if let dataString = String(data: data, encoding: .utf8) {
+                    return dataString
+                }
             }
-             else if let string = (value as? CustomStringConvertible)?.description,
-                !(value is [String:Any]) && !(value is [[String:Any]])
+            if let string = (value as? CustomStringConvertible)?.description, !(value is [String:Any]) && !(value is [[String:Any]])
                     {
                 return string
-            } else if let jsonData = try? JSONSerialization.data(withJSONObject: value, options: .prettyPrinted),
+            }
+            if let jsonData = try? JSONSerialization.data(withJSONObject: value, options: .prettyPrinted),
                 let jsonString = String(bytes: jsonData, encoding: .utf8) {
                 return jsonString
-            } else {
-                return "\(value)"
             }
+            return "\(value)"
         }
         return ""
     }
@@ -55,7 +57,7 @@ extension Observable where Element:DataRequest {
             if let error = errors[code] {
                 return error
             }
-            if let error = RxAlamofireObjectMapper.config.statusCodeErrors[code] {
+            if let error = RxAlamofireObjectMapper.config.defaultStatusCodeErrors[code] {
                 return error
             }
             return nil
@@ -68,7 +70,7 @@ extension Observable where Element:DataRequest {
         return self.getResponse(withStatusCodes: [statusCode], error: error, statusCodeError: statusCodeError)
     }
     
-    public func getResponse(withStatusCodes statusCodes: [Int] = RxAlamofireObjectMapper.config.statusCodeSuccess,error: Error,statusCodeError:[Int:Error] = [:]) -> Observable<HTTPURLResponse> {
+    public func getResponse(withStatusCodes statusCodes: [Int] = RxAlamofireObjectMapper.config.defaultResponseStatusCodes,error: Error,statusCodeError:[Int:Error] = [:]) -> Observable<HTTPURLResponse> {
         return self.flatMap{ self.getResponse(fromRequest: $0,withStatusCodes: statusCodes, error: error, statusCodeError: statusCodeError) }
     }
     
