@@ -57,7 +57,7 @@ extension Observable where Element:DataRequest {
             if let error = errors[code] {
                 return error
             }
-            if let error = RxAlamofireObjectMapper.config.defaultStatusCodeErrors[code] {
+            if let error = RxAlamofireObjectMapper.config.statusCodeErrors[code] {
                 return error
             }
             return nil
@@ -70,7 +70,7 @@ extension Observable where Element:DataRequest {
         return self.getResponse(withStatusCodes: [statusCode], error: error, statusCodeError: statusCodeError)
     }
     
-    public func getResponse(withStatusCodes statusCodes: [Int] = RxAlamofireObjectMapper.config.defaultResponseStatusCodes,error: Error,statusCodeError:[Int:Error] = [:]) -> Observable<HTTPURLResponse> {
+    public func getResponse(withStatusCodes statusCodes: [Int] = RxAlamofireObjectMapper.config.defaultResponseRequestStatusCodes,error: Error,statusCodeError:[Int:Error] = [:]) -> Observable<HTTPURLResponse> {
         return self.flatMap{ self.getResponse(fromRequest: $0,withStatusCodes: statusCodes, error: error, statusCodeError: statusCodeError) }
     }
     
