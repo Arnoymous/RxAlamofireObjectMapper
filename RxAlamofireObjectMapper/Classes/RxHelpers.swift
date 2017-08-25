@@ -14,14 +14,17 @@ extension Observable where Element:DataRequest {
     
     private func string(of value: Any?) -> String {
         if let value = value {
-            if let string = (value as? CustomStringConvertible)?.description, !(value is [String:Any]) && !(value is [[String:Any]]) {
+            if let data = value as? Data,
+                let dataString = String(data: data, encoding: .utf8) {
+                return dataString
+            }
+             else if let string = (value as? CustomStringConvertible)?.description,
+                !(value is [String:Any]) && !(value is [[String:Any]])
+                    {
                 return string
             } else if let jsonData = try? JSONSerialization.data(withJSONObject: value, options: .prettyPrinted),
                 let jsonString = String(bytes: jsonData, encoding: .utf8) {
                 return jsonString
-            } else if let data = value as? Data,
-                let dataString = String(data: data, encoding: .utf8) {
-                return dataString
             } else {
                 return "\(value)"
             }
@@ -65,7 +68,7 @@ extension Observable where Element:DataRequest {
         return self.getResponse(withStatusCodes: [statusCode], error: error, statusCodeError: statusCodeError)
     }
     
-    public func getResponse(withStatusCodes statusCodes: [Int] = [],error: Error,statusCodeError:[Int:Error] = [:]) -> Observable<HTTPURLResponse> {
+    public func getResponse(withStatusCodes statusCodes: [Int] = RxAlamofireObjectMapper.config.statusCodeSuccess,error: Error,statusCodeError:[Int:Error] = [:]) -> Observable<HTTPURLResponse> {
         return self.flatMap{ self.getResponse(fromRequest: $0,withStatusCodes: statusCodes, error: error, statusCodeError: statusCodeError) }
     }
     
@@ -200,7 +203,7 @@ extension Observable where Element:DataRequest {
                         return customResult
                     }
                     if let requestResult = requestResult.as(Any.self),
-                        let defaultResult = RxAlamofireObjectMapper.config.JSONHandler.json?(requestResult, JSON, statusCode)?.as(T.self) {
+                        let defaultResult = RxAlamofireObjectMapper.config.JSONHandler.all?(requestResult, JSON, statusCode)?.as(T.self) {
                         return defaultResult
                     }
                     return requestResult
