@@ -22,7 +22,7 @@ extension ObservableType where E:DataRequest {
                 }
             }
             if let string = (value as? CustomStringConvertible)?.description, !(value is [String:Any]) && !(value is [[String:Any]])
-                    {
+            {
                 return string
             }
             if let jsonData = try? JSONSerialization.data(withJSONObject: value, options: .prettyPrinted),
@@ -95,12 +95,12 @@ extension ObservableType where E:DataRequest {
     }
     
     public func getObject<T: Mappable>(withType type: T.Type? = nil,
-                   keyPath: String? = nil,
-                   keyPathDelimiter: String? = nil,
-                   context: MapContext? = nil,
-                   mapError: Error,
-                   statusCodeError:[Int:Error] = [:],
-                   JSONMapHandler: ((Result<[String:Any]>, Any?, Int?)->Result<[String:Any]>?)? = nil) -> Observable<T> {
+                          keyPath: String? = nil,
+                          keyPathDelimiter: String? = nil,
+                          context: MapContext? = nil,
+                          mapError: Error,
+                          statusCodeError:[Int:Error] = [:],
+                          JSONMapHandler: ((Result<[String:Any]>, Any?, Int?)->Result<[String:Any]>?)? = nil) -> Observable<T> {
         
         return self.flatMap{ self.getObject(withType: type,fromRequest: $0, keyPath: keyPath, keyPathDelimiter: keyPathDelimiter, context: context, mapError: mapError, statusCodeError: statusCodeError, JSONMapHandler: JSONMapHandler) }
     }
@@ -114,7 +114,7 @@ extension ObservableType where E:DataRequest {
                            statusCodeError:[Int:Error],
                            JSONMapHandler: ((Result<[String:Any]>, Any?, Int?)->Result<[String:Any]>?)?) -> Observable<T> {
         
-        return self.getJSON(withType: [String:Any].self, keyPath: keyPath, keyPathDelimiter: keyPathDelimiter, error: mapError, statusCodeError: statusCodeError) { result, JSON, statusCode in
+        return self.getJSON(withType: [String:Any].self, fromRequest: request, keyPath: keyPath, keyPathDelimiter: keyPathDelimiter, options: .allowFragments, error: mapError, statusCodeError: statusCodeError) { result, JSON, statusCode in
             if let customResult = JSONMapHandler?(result, JSON, statusCode) {
                 return customResult
             }
@@ -122,7 +122,7 @@ extension ObservableType where E:DataRequest {
                 return defaultConfigResult
             }
             return nil
-        }.mapToObject(withType: type, context: context, mapError: mapError)
+            }.mapToObject(withType: type, context: context, mapError: mapError)
     }
     
     public func getObjectArray<T: Mappable>(keyPath: String? = nil,
@@ -136,15 +136,14 @@ extension ObservableType where E:DataRequest {
     }
     
     private func getObjectArray<T: Mappable>(withType type: T.Type? = nil,
-                          fromRequest request:DataRequest,
-                          keyPath: String? = nil,
-                          keyPathDelimiter: String?,
-                          context: MapContext?,
-                          mapError: Error,
-                          statusCodeError:[Int:Error],
-                          JSONMapHandler: ((Result<[[String:Any]]>, Any?, Int?)->Result<[[String:Any]]>?)?) -> Observable<[T]> {
-        
-        return self.getJSON(withType: [[String:Any]].self, keyPath: keyPath, keyPathDelimiter: keyPathDelimiter, error: mapError, statusCodeError: statusCodeError) { result, JSON, statusCode in
+                                fromRequest request:DataRequest,
+                                keyPath: String? = nil,
+                                keyPathDelimiter: String?,
+                                context: MapContext?,
+                                mapError: Error,
+                                statusCodeError:[Int:Error],
+                                JSONMapHandler: ((Result<[[String:Any]]>, Any?, Int?)->Result<[[String:Any]]>?)?) -> Observable<[T]> {
+        return self.getJSON(withType: [[String:Any]].self, fromRequest: request, keyPath: keyPath, keyPathDelimiter: keyPathDelimiter, options: .allowFragments, error: mapError, statusCodeError: statusCodeError) { result, JSON, statusCode in
             if let customResult = JSONMapHandler?(result, JSON, statusCode) {
                 return customResult
             }
@@ -152,16 +151,16 @@ extension ObservableType where E:DataRequest {
                 return defaultConfigResult
             }
             return nil
-        }.mapToObjectArray(withType: type, context: context)
+            }.mapToObjectArray(withType: type, context: context)
     }
     
     public func getJSON<T>(withType type: T.Type? = nil,
-                 keyPath: String? = nil,
-                 keyPathDelimiter: String? = nil,
-                 options: JSONSerialization.ReadingOptions = .allowFragments,
-                 error: Error,
-                 statusCodeError:[Int:Error] = [:],
-                 JSONHandler: ((Result<T>, Any?, Int?)->Result<T>?)? = nil) -> Observable<T> {
+                        keyPath: String? = nil,
+                        keyPathDelimiter: String? = nil,
+                        options: JSONSerialization.ReadingOptions = .allowFragments,
+                        error: Error,
+                        statusCodeError:[Int:Error] = [:],
+                        JSONHandler: ((Result<T>, Any?, Int?)->Result<T>?)? = nil) -> Observable<T> {
         
         return self.flatMap{ self.getJSON(withType: type, fromRequest: $0, keyPath: keyPath, keyPathDelimiter: keyPathDelimiter, options: options, error: error, statusCodeError: statusCodeError, JSONHandler: JSONHandler) }
     }
