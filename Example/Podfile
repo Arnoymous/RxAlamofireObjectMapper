@@ -1,6 +1,9 @@
 use_frameworks!
 
 target 'RxAlamofireObjectMapper_Example' do
+    pod 'RxDataSources'
+    pod 'RxSwiftExt'
+    pod 'PureLayout'
   pod 'RxAlamofireObjectMapper', :path => '../'
 
   target 'RxAlamofireObjectMapper_Tests' do
