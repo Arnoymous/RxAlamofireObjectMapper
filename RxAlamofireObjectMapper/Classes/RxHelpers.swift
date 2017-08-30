@@ -10,7 +10,7 @@ import Alamofire
 import RxSwift
 import ObjectMapper
 
-extension Observable where Element:DataRequest {
+extension ObservableType where E:DataRequest {
     
     private func string(of value: Any?) -> String {
         if var value = value {
@@ -264,7 +264,7 @@ extension Dictionary where Key == String, Value == Any {
     }
 }
 
-extension Observable where Element == [String:Any] {
+extension ObservableType where E == [String:Any] {
     
     public func mapToObject<T: Mappable>(withType type: T.Type? = nil, context: MapContext?, mapError: Error) -> Observable<T> {
         return self.flatMap{ JSON -> Observable<T> in
@@ -277,7 +277,7 @@ extension Observable where Element == [String:Any] {
     }
 }
 
-extension Observable where Element == [[String:Any]] {
+extension ObservableType where E == [[String:Any]] {
     
     public func mapToObjectArray<T: Mappable>(withType type: T.Type? = nil, context: MapContext?) -> Observable<[T]> {
         return self.map{ JSONArray -> [T] in
@@ -285,3 +285,12 @@ extension Observable where Element == [[String:Any]] {
         }
     }
 }
+
+extension ObservableType {
+    
+    public func mapToResult() -> Observable<Result<E>> {
+        return self.map{ .success($0) }
+            .catchError{ .just(.failure($0)) }
+    }
+}
+
