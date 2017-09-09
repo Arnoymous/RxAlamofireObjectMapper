@@ -22,14 +22,14 @@ public class RxAlamofireObjectMapper {
         
         public var JSONHandler: (
             all:((Result<Any>, Any?, Int?)->Result<Any>?)?,
-            object:((Result<[String:Any]>, Any?, Int?)->Result<[String:Any]>?)?,
-            objectArray:((Result<[[String:Any]]>, Any?, Int?)->Result<[[String:Any]]>?)?
+            object:((Result<[String:Any]>, Any.Type, Any?, Int?)->Result<[String:Any]>?)?,
+            objectArray:((Result<[[String:Any]]>, Any.Type, Any?, Int?)->Result<[[String:Any]]>?)?
             ) = (nil, nil, nil)
+        
+        public static let shared = Configuration()
         
         internal init() { }
     }
     
-    public static let config = Configuration()
-
     private init() { }
 }

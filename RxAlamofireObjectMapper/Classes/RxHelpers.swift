@@ -35,7 +35,7 @@ extension ObservableType where E:DataRequest {
     }
     
     private func debugRequest<T>(_ request: URLRequest?, result: Result<T>) {
-        if let request = request, RxAlamofireObjectMapper.config.debug {
+        if let request = request, RxAlamofireObjectMapper.Configuration.shared.debug {
             print("\n******** Request ********")
             print("method:\(request.httpMethod ?? "")")
             print("url:\(request.url?.absoluteString ?? "")")
@@ -57,12 +57,12 @@ extension ObservableType where E:DataRequest {
             if let error = errors[code] {
                 return error
             }
-            if let error = RxAlamofireObjectMapper.config.statusCodeErrors[code] {
+            if let error = RxAlamofireObjectMapper.Configuration.shared.statusCodeErrors[code] {
                 return error
             }
             return nil
         } else {
-            return RxAlamofireObjectMapper.config.networkError
+            return RxAlamofireObjectMapper.Configuration.shared.networkError
         }
     }
     
@@ -70,7 +70,7 @@ extension ObservableType where E:DataRequest {
         return self.getResponse(withStatusCodes: [statusCode], error: error, statusCodeError: statusCodeError)
     }
     
-    public func getResponse(withStatusCodes statusCodes: [Int] = RxAlamofireObjectMapper.config.defaultResponseRequestStatusCodes,error: Error,statusCodeError:[Int:Error] = [:]) -> Observable<HTTPURLResponse> {
+    public func getResponse(withStatusCodes statusCodes: [Int] = RxAlamofireObjectMapper.Configuration.shared.defaultResponseRequestStatusCodes,error: Error,statusCodeError:[Int:Error] = [:]) -> Observable<HTTPURLResponse> {
         return self.flatMap{ self.getResponse(fromRequest: $0,withStatusCodes: statusCodes, error: error, statusCodeError: statusCodeError) }
     }
     
@@ -96,79 +96,65 @@ extension ObservableType where E:DataRequest {
     
     public func getObject<T: Mappable>(withType type: T.Type? = nil,
                           keyPath: String? = nil,
-                          keyPathDelimiter: String? = nil,
+                          nestedKeyDelimiter: String? = nil,
                           context: MapContext? = nil,
                           mapError: Error,
                           statusCodeError:[Int:Error] = [:],
                           JSONMapHandler: ((Result<[String:Any]>, Any?, Int?)->Result<[String:Any]>?)? = nil) -> Observable<T> {
         
-        return self.flatMap{ self.getObject(withType: type,fromRequest: $0, keyPath: keyPath, keyPathDelimiter: keyPathDelimiter, context: context, mapError: mapError, statusCodeError: statusCodeError, JSONMapHandler: JSONMapHandler) }
+        return self.flatMap{ self.getObject(withType: type,fromRequest: $0, keyPath: keyPath, nestedKeyDelimiter: nestedKeyDelimiter, context: context, mapError: mapError, statusCodeError: statusCodeError, JSONMapHandler: JSONMapHandler) }
     }
     
     private func getObject<T: Mappable>(withType type: T.Type?,
                            fromRequest request:DataRequest,
                            keyPath: String?,
-                           keyPathDelimiter: String?,
+                           nestedKeyDelimiter: String?,
                            context: MapContext?,
                            mapError: Error,
                            statusCodeError:[Int:Error],
                            JSONMapHandler: ((Result<[String:Any]>, Any?, Int?)->Result<[String:Any]>?)?) -> Observable<T> {
         
-        return self.getJSON(withType: [String:Any].self, fromRequest: request, keyPath: keyPath, keyPathDelimiter: keyPathDelimiter, options: .allowFragments, error: mapError, statusCodeError: statusCodeError) { result, JSON, statusCode in
-            if let customResult = JSONMapHandler?(result, JSON, statusCode) {
-                return customResult
-            }
-            if let defaultConfigResult = RxAlamofireObjectMapper.config.JSONHandler.object?(result, JSON, statusCode) {
-                return defaultConfigResult
-            }
-            return nil
-            }.mapToObject(withType: type, context: context, mapError: mapError)
+        return self.getJSON(withType: [String:Any].self, fromRequest: request, keyPath: keyPath, nestedKeyDelimiter: nestedKeyDelimiter, options: .allowFragments, error: mapError, statusCodeError: statusCodeError, JSONHandler: RxAlamofireObjectMapper.JSONHandler(type: T.self, JSONMapHandler: JSONMapHandler))
+            .mapToObject(withType: type, context: context, mapError: mapError)
     }
     
     public func getObjectArray<T: Mappable>(keyPath: String? = nil,
-                               keyPathDelimiter: String? = nil,
+                               nestedKeyDelimiter: String? = nil,
                                context: MapContext? = nil,
                                mapError: Error,
                                statusCodeError:[Int:Error] = [:],
                                JSONMapHandler: ((Result<[[String:Any]]>, Any?, Int?)->Result<[[String:Any]]>?)? = nil) -> Observable<[T]> {
         
-        return self.flatMap{ self.getObjectArray(fromRequest: $0, keyPath: keyPath, keyPathDelimiter: keyPathDelimiter, context: context, mapError: mapError, statusCodeError: statusCodeError, JSONMapHandler: JSONMapHandler) }
+        return self.flatMap{ self.getObjectArray(fromRequest: $0, keyPath: keyPath, nestedKeyDelimiter: nestedKeyDelimiter, context: context, mapError: mapError, statusCodeError: statusCodeError, JSONMapHandler: JSONMapHandler) }
     }
     
     private func getObjectArray<T: Mappable>(withType type: T.Type? = nil,
                                 fromRequest request:DataRequest,
                                 keyPath: String? = nil,
-                                keyPathDelimiter: String?,
+                                nestedKeyDelimiter: String?,
                                 context: MapContext?,
                                 mapError: Error,
                                 statusCodeError:[Int:Error],
                                 JSONMapHandler: ((Result<[[String:Any]]>, Any?, Int?)->Result<[[String:Any]]>?)?) -> Observable<[T]> {
-        return self.getJSON(withType: [[String:Any]].self, fromRequest: request, keyPath: keyPath, keyPathDelimiter: keyPathDelimiter, options: .allowFragments, error: mapError, statusCodeError: statusCodeError) { result, JSON, statusCode in
-            if let customResult = JSONMapHandler?(result, JSON, statusCode) {
-                return customResult
-            }
-            if let defaultConfigResult = RxAlamofireObjectMapper.config.JSONHandler.objectArray?(result, JSON, statusCode) {
-                return defaultConfigResult
-            }
-            return nil
-            }.mapToObjectArray(withType: type, context: context)
+        return self.getJSON(withType: [[String:Any]].self, fromRequest: request, keyPath: keyPath, nestedKeyDelimiter: nestedKeyDelimiter, options: .allowFragments, error: mapError, statusCodeError: statusCodeError, JSONHandler: RxAlamofireObjectMapper.JSONHandler(type: T.self, JSONMapHandler: JSONMapHandler))
+            .mapToObjectArray(withType: type, context: context)
     }
     
     public func getJSON<T>(withType type: T.Type? = nil,
                         keyPath: String? = nil,
-                        keyPathDelimiter: String? = nil,
+                        nestedKeyDelimiter: String? = nil,
                         options: JSONSerialization.ReadingOptions = .allowFragments,
                         error: Error,
                         statusCodeError:[Int:Error] = [:],
                         JSONHandler: ((Result<T>, Any?, Int?)->Result<T>?)? = nil) -> Observable<T> {
         
-        return self.flatMap{ self.getJSON(withType: type, fromRequest: $0, keyPath: keyPath, keyPathDelimiter: keyPathDelimiter, options: options, error: error, statusCodeError: statusCodeError, JSONHandler: JSONHandler) }
+        return self.flatMap{ self.getJSON(withType: type, fromRequest: $0, keyPath: keyPath, nestedKeyDelimiter: nestedKeyDelimiter, options: options, error: error, statusCodeError: statusCodeError, JSONHandler: JSONHandler) }
     }
     
     private func getJSON<T>(withType type: T.Type?,
                          fromRequest request:DataRequest,
                          keyPath: String?,
-                         keyPathDelimiter: String?,
+                         nestedKeyDelimiter: String?,
                          options: JSONSerialization.ReadingOptions,
                          error: Error,
                          statusCodeError:[Int:Error],
@@ -181,8 +167,8 @@ extension ObservableType where E:DataRequest {
                 var JSON = response.result.value
                 if let keyPath = keyPath {
                     var keyPaths = [keyPath]
-                    if let keyPathDelimiter = keyPathDelimiter {
-                        keyPaths = keyPath.components(separatedBy: keyPathDelimiter)
+                    if let nestedKeyDelimiter = nestedKeyDelimiter {
+                        keyPaths = keyPath.components(separatedBy: nestedKeyDelimiter)
                     }
                     JSON = keyPaths.reduce(JSON, { (JSON, keyPath) -> Any? in
                         var JSON = JSON
@@ -204,7 +190,7 @@ extension ObservableType where E:DataRequest {
                         return customResult
                     }
                     if let requestResult = requestResult.as(Any.self),
-                        let defaultResult = RxAlamofireObjectMapper.config.JSONHandler.all?(requestResult, JSON, statusCode)?.as(T.self) {
+                        let defaultResult = RxAlamofireObjectMapper.Configuration.shared.JSONHandler.all?(requestResult, JSON, statusCode)?.as(T.self) {
                         return defaultResult
                     }
                     return requestResult
@@ -290,6 +276,33 @@ extension ObservableType {
     public func mapToResult() -> Observable<Result<E>> {
         return self.map{ .success($0) }
             .catchError{ .just(.failure($0)) }
+    }
+}
+
+extension RxAlamofireObjectMapper {
+    
+    public static func JSONHandler<T>(type: T.Type? = nil, JSONMapHandler: ((Result<[String:Any]>, Any?, Int?)->Result<[String:Any]>?)?) -> ((Result<[String:Any]>, Any?, Int?)->Result<[String:Any]>?) {
+        return { result, JSON, statusCode in
+            if let customResult = JSONMapHandler?(result, JSON, statusCode) {
+                return customResult
+            }
+            if let defaultConfigResult = RxAlamofireObjectMapper.Configuration.shared.JSONHandler.object?(result, T.self, JSON, statusCode) {
+                return defaultConfigResult
+            }
+            return nil
+        }
+    }
+    
+    public static func JSONHandler<T>(type: T.Type? = nil, JSONMapHandler: ((Result<[[String:Any]]>, Any?, Int?)->Result<[[String:Any]]>?)?) -> ((Result<[[String:Any]]>, Any?, Int?)->Result<[[String:Any]]>?) {
+        return { result, JSON, statusCode in
+            if let customResult = JSONMapHandler?(result, JSON, statusCode) {
+                return customResult
+            }
+            if let defaultConfigResult = RxAlamofireObjectMapper.Configuration.shared.JSONHandler.objectArray?(result, T.self, JSON, statusCode) {
+                return defaultConfigResult
+            }
+            return nil
+        }
     }
 }
 
