@@ -21,9 +21,9 @@ public class RxAlamofireObjectMapper {
         public var defaultResponseRequestStatusCodes = [Int]()
         
         public var JSONHandler: (
-            all:((Result<Any>, Any?, Int?)->Result<Any>?)?,
-            object:((Result<[String:Any]>, Any.Type, Any?, Int?)->Result<[String:Any]>?)?,
-            objectArray:((Result<[[String:Any]]>, Any.Type, Any?, Int?)->Result<[[String:Any]]>?)?
+            all:((Result<Any>, Any?, Int?, Error)->Result<Any>?)?,
+            object:((Result<[String:Any]>, Any.Type, Any?, Int?, Error)->Result<[String:Any]>?)?,
+            objectArray:((Result<[[String:Any]]>, Any.Type, Any?, Int?, Error)->Result<[[String:Any]]>?)?
             ) = (nil, nil, nil)
         
         public static let shared = Configuration()
