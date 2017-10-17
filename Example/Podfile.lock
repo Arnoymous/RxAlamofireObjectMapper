@@ -1,18 +1,18 @@
 PODS:
-  - Alamofire (4.5.0)
-  - Differentiator (2.0.1)
-  - ObjectMapper (2.2.8)
+  - Alamofire (4.5.1)
+  - Differentiator (2.0.2)
+  - ObjectMapper (3.0.0)
   - PureLayout (3.0.2)
-  - RxAlamofireObjectMapper (0.1.5):
-    - Alamofire (~> 4.5.0)
-    - ObjectMapper (~> 2.2.8)
+  - RxAlamofireObjectMapper (0.1.9):
+    - Alamofire (~> 4.5.1)
+    - ObjectMapper (~> 3.0.0)
     - RxSwift (~> 3.6.1)
   - RxCocoa (3.6.1):
     - RxSwift (~> 3.6)
-  - RxDataSources (2.0.1):
+  - RxDataSources (2.0.2):
     - Differentiator (~> 2.0)
-    - RxCocoa (~> 3.0)
-    - RxSwift (~> 3.0)
+    - RxCocoa (>= 3.6.1)
+    - RxSwift (>= 3.6.1)
   - RxSwift (3.6.1)
   - RxSwiftExt (2.5.1):
     - RxSwiftExt/Core (= 2.5.1)
@@ -30,13 +30,13 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  Alamofire: f28cdffd29de33a7bfa022cbd63ae95a27fae140
-  Differentiator: 8555f40f5df08beb9bcf225724af295b90e738cb
-  ObjectMapper: 3d571bb5af471c779e1160828cd9ad5c4ef90958
+  Alamofire: 2d95912bf4c34f164fdfc335872e8c312acaea4a
+  Differentiator: caa9b3957981a2ac8e6b2eac8a676af461caa604
+  ObjectMapper: 92230db59bf8f341a5c3a3cf0b9fbdde3cf0d87f
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
-  RxAlamofireObjectMapper: 54c65d090a4927182ea613724c925da2c5d6ab5c
+  RxAlamofireObjectMapper: 4637932d44638af880acef608fab01db13156a90
   RxCocoa: 84a08739ab186248c7f31ce4ee92d6f8a947d690
-  RxDataSources: 93c805010d4f5970e5204829a182bcdceab5adb5
+  RxDataSources: 7f190474a93a206c082c2d74c4cc9c8f7bea4feb
   RxSwift: f9de85ea20cd2f7716ee5409fc13523dc638e4e4
   RxSwiftExt: ec25c6df68d15ad6fe326792d60452b52e83d606
 

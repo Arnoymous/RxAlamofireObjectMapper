@@ -34,7 +34,7 @@ extension ObservableType where E:DataRequest {
         return ""
     }
     
-    private func debugRequest<T>(_ request: URLRequest?, result: Result<T>) {
+    private func debugRequest<T>(_ request: URLRequest?, result: Result<T>, cancel: Bool) {
         if let request = request, RxAlamofireObjectMapper.Configuration.shared.debug {
             print("\n******** Request ********")
             print("method:\(request.httpMethod ?? "")")
@@ -42,11 +42,15 @@ extension ObservableType where E:DataRequest {
             print("headers:\(string(of: request.allHTTPHeaderFields))")
             print("parameters:\(self.string(of: request.httpBody))")
             print("******** Result ********")
-            switch result {
-            case .success(let value):
-                print("result: \(self.string(of: value))")
-            case .failure(let error):
-                print("error:\(error.localizedDescription)")
+            if cancel {
+                print("cancelled")
+            } else {
+                switch result {
+                case .success(let value):
+                    print("result: \(self.string(of: value))")
+                case .failure(let error):
+                    print("error:\(error.localizedDescription)")
+                }
             }
             print("*************************\n")
         }
@@ -76,6 +80,7 @@ extension ObservableType where E:DataRequest {
     
     private func getResponse(fromRequest request:DataRequest,withStatusCodes statusCodes: [Int],error: Error,statusCodeError:[Int:Error]) -> Observable<HTTPURLResponse> {
         return Observable<HTTPURLResponse>.create({ (observer:AnyObserver<HTTPURLResponse>) -> Disposable in
+            var cancel = false
             let request = request.response(completionHandler: { (response:DefaultDataResponse) in
                 let serverError = self.getServerError(fromStatusCode: response.response?.statusCode, errors: statusCodeError)
                 var result: Result<HTTPURLResponse>
@@ -84,11 +89,12 @@ extension ObservableType where E:DataRequest {
                 } else {
                     result = .failure(serverError ?? error)
                 }
-                self.debugRequest(response.request, result: result)
+                self.debugRequest(response.request, result: result, cancel: cancel)
                 observer.on(result.event)
                 observer.onCompleted()
             })
             return Disposables.create {
+                cancel = true
                 request.cancel()
             }
         })
@@ -161,6 +167,7 @@ extension ObservableType where E:DataRequest {
                          JSONHandler: ((Result<T>, Any?, Int?, Error)->Result<T>?)?) -> Observable<T> {
         
         return Observable<T>.create({ observer -> Disposable in
+            var cancel = false
             request.responseJSON(options: options, completionHandler: { response in
                 let statusCode = response.response?.statusCode
                 let serverError = self.getServerError(fromStatusCode: statusCode, errors: statusCodeError)
@@ -197,11 +204,12 @@ extension ObservableType where E:DataRequest {
                     return requestResult
                 }
                 let requestResult = getResult()
-                self.debugRequest(response.request, result: requestResult)
+                self.debugRequest(response.request, result: requestResult, cancel: cancel)
                 observer.on(requestResult.event)
                 observer.onCompleted()
             })
             return Disposables.create {
+                cancel = true
                 request.cancel()
             }
         })
