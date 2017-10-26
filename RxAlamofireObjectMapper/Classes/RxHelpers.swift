@@ -124,14 +124,15 @@ extension ObservableType where E:DataRequest {
             .mapToObject(withType: type, context: context, mapError: mapError)
     }
     
-    public func getObjectArray<T: Mappable>(keyPath: String? = nil,
-                               nestedKeyDelimiter: String? = nil,
-                               context: MapContext? = nil,
-                               mapError: Error,
-                               statusCodeError:[Int:Error] = [:],
-                               JSONMapHandler: ((Result<[[String:Any]]>, Any?, Int?, Error)->Result<[[String:Any]]>?)? = nil) -> Observable<[T]> {
+    public func getObjectArray<T: Mappable>(withType type: T.Type? = nil,
+                                            keyPath: String? = nil,
+                                            nestedKeyDelimiter: String? = nil,
+                                            context: MapContext? = nil,
+                                            mapError: Error,
+                                            statusCodeError:[Int:Error] = [:],
+                                            JSONMapHandler: ((Result<[[String:Any]]>, Any?, Int?, Error)->Result<[[String:Any]]>?)? = nil) -> Observable<[T]> {
         
-        return self.flatMap{ self.getObjectArray(fromRequest: $0, keyPath: keyPath, nestedKeyDelimiter: nestedKeyDelimiter, context: context, mapError: mapError, statusCodeError: statusCodeError, JSONMapHandler: JSONMapHandler) }
+        return self.flatMap{ self.getObjectArray(withType: type, fromRequest: $0, keyPath: keyPath, nestedKeyDelimiter: nestedKeyDelimiter, context: context, mapError: mapError, statusCodeError: statusCodeError, JSONMapHandler: JSONMapHandler) }
     }
     
     private func getObjectArray<T: Mappable>(withType type: T.Type? = nil,
@@ -146,14 +147,15 @@ extension ObservableType where E:DataRequest {
             .mapToObjectArray(withType: type, context: context, mapError: mapError)
     }
     
-    public func getObjectArrayOfArrays<T: Mappable>(keyPath: String? = nil,
-                                            nestedKeyDelimiter: String? = nil,
-                                            context: MapContext? = nil,
-                                            mapError: Error,
-                                            statusCodeError:[Int:Error] = [:],
-                                            JSONMapHandler: ((Result<[[[String:Any]]]>, Any?, Int?, Error)->Result<[[[String:Any]]]>?)? = nil) -> Observable<[[T]]> {
+    public func getObjectArrayOfArrays<T: Mappable>(withType type: T.Type? = nil,
+                                                    keyPath: String? = nil,
+                                                    nestedKeyDelimiter: String? = nil,
+                                                    context: MapContext? = nil,
+                                                    mapError: Error,
+                                                    statusCodeError:[Int:Error] = [:],
+                                                    JSONMapHandler: ((Result<[[[String:Any]]]>, Any?, Int?, Error)->Result<[[[String:Any]]]>?)? = nil) -> Observable<[[T]]> {
         
-        return self.flatMap{ self.getObjectArrayOfArrays(fromRequest: $0, keyPath: keyPath, nestedKeyDelimiter: nestedKeyDelimiter, context: context, mapError: mapError, statusCodeError: statusCodeError, JSONMapHandler: JSONMapHandler) }
+        return self.flatMap{ self.getObjectArrayOfArrays(withType: type, fromRequest: $0, keyPath: keyPath, nestedKeyDelimiter: nestedKeyDelimiter, context: context, mapError: mapError, statusCodeError: statusCodeError, JSONMapHandler: JSONMapHandler) }
     }
     
     private func getObjectArrayOfArrays<T: Mappable>(withType type: T.Type? = nil,
@@ -168,14 +170,15 @@ extension ObservableType where E:DataRequest {
             .mapToObjectArrayOfArrays(withType: type, context: context, mapError: mapError)
     }
     
-    public func getObjectDictionary<T: Mappable>(keyPath: String? = nil,
-                                                                 nestedKeyDelimiter: String? = nil,
-                                                                 context: MapContext? = nil,
-                                                                 mapError: Error,
-                                                                 statusCodeError:[Int:Error] = [:],
-                                                                 JSONMapHandler: ((Result<[String:[String:Any]]>, Any?, Int?, Error)->Result<[String:[String:Any]]>?)? = nil) -> Observable<[String:T]> {
+    public func getObjectDictionary<T: Mappable>(withType type: T.Type? = nil,
+                                                 keyPath: String? = nil,
+                                                 nestedKeyDelimiter: String? = nil,
+                                                 context: MapContext? = nil,
+                                                 mapError: Error,
+                                                 statusCodeError:[Int:Error] = [:],
+                                                 JSONMapHandler: ((Result<[String:[String:Any]]>, Any?, Int?, Error)->Result<[String:[String:Any]]>?)? = nil) -> Observable<[String:T]> {
         
-        return self.flatMap{ self.getObjectDictionary(fromRequest: $0, keyPath: keyPath, nestedKeyDelimiter: nestedKeyDelimiter, context: context, mapError: mapError, statusCodeError: statusCodeError, JSONMapHandler: JSONMapHandler) }
+        return self.flatMap{ self.getObjectDictionary(withType: type, fromRequest: $0, keyPath: keyPath, nestedKeyDelimiter: nestedKeyDelimiter, context: context, mapError: mapError, statusCodeError: statusCodeError, JSONMapHandler: JSONMapHandler) }
     }
     
     private func getObjectDictionary<T: Mappable>(withType type: T.Type? = nil,
@@ -190,14 +193,15 @@ extension ObservableType where E:DataRequest {
             .mapToObjectDictionary(withType: type, context: context, mapError: mapError)
     }
     
-    public func getObjectDictionaryOfArrays<T: Mappable>(keyPath: String? = nil,
-                                                 nestedKeyDelimiter: String? = nil,
-                                                 context: MapContext? = nil,
-                                                 mapError: Error,
-                                                 statusCodeError:[Int:Error] = [:],
-                                                 JSONMapHandler: ((Result<[String:[[String:Any]]]>, Any?, Int?, Error)->Result<[String:[[String:Any]]]>?)? = nil) -> Observable<[String:[T]]> {
+    public func getObjectDictionaryOfArrays<T: Mappable>(withType type: T.Type? = nil,
+                                                         keyPath: String? = nil,
+                                                         nestedKeyDelimiter: String? = nil,
+                                                         context: MapContext? = nil,
+                                                         mapError: Error,
+                                                         statusCodeError:[Int:Error] = [:],
+                                                         JSONMapHandler: ((Result<[String:[[String:Any]]]>, Any?, Int?, Error)->Result<[String:[[String:Any]]]>?)? = nil) -> Observable<[String:[T]]> {
         
-        return self.flatMap{ self.getObjectDictionaryOfArrays(fromRequest: $0, keyPath: keyPath, nestedKeyDelimiter: nestedKeyDelimiter, context: context, mapError: mapError, statusCodeError: statusCodeError, JSONMapHandler: JSONMapHandler) }
+        return self.flatMap{ self.getObjectDictionaryOfArrays(withType: type, fromRequest: $0, keyPath: keyPath, nestedKeyDelimiter: nestedKeyDelimiter, context: context, mapError: mapError, statusCodeError: statusCodeError, JSONMapHandler: JSONMapHandler) }
     }
     
     private func getObjectDictionaryOfArrays<T: Mappable>(withType type: T.Type? = nil,

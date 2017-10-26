@@ -3,10 +3,10 @@ PODS:
   - Differentiator (3.0.1)
   - ObjectMapper (3.0.0)
   - PureLayout (3.0.2)
-  - RxAlamofireObjectMapper (0.2.0):
-    - Alamofire (~> 4.5.1)
-    - ObjectMapper (~> 3.0.0)
-    - RxSwift (~> 4.0.0)
+  - RxAlamofireObjectMapper (0.2.1):
+    - Alamofire (~> 4.5)
+    - ObjectMapper (~> 3.0)
+    - RxSwift (~> 4.0)
   - RxCocoa (4.0.0):
     - RxSwift (~> 4.0)
   - RxDataSources (3.0.1):
@@ -34,7 +34,7 @@ SPEC CHECKSUMS:
   Differentiator: ffe513ce1ea4e7198b89fac94d6e281c673055a9
   ObjectMapper: 92230db59bf8f341a5c3a3cf0b9fbdde3cf0d87f
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
-  RxAlamofireObjectMapper: 9c2a0e47d2cfe215e05a1d079fd7b2b1b4d82c18
+  RxAlamofireObjectMapper: 80637c5f5b4cb4030ade536bd74944b6dde6c4a4
   RxCocoa: d62846ca96495d862fa4c59ea7d87e5031d7340e
   RxDataSources: 098b7e62b6316313b14d6bf594e3f4f4f62a238a
   RxSwift: fd680d75283beb5e2559486f3c0ff852f0d35334
