@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'RxAlamofireObjectMapper'
-  s.version          = '0.1.9'
+  s.version          = '0.2.0'
   s.summary          = 'Rx DataRequest helpers for ObjectMapper'
 
 # This description is used to generate tags and improve search results.
@@ -40,7 +40,7 @@ TODO: Add long description of the pod here.
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  s.dependency 'RxSwift', '~> 3.6.1'
+  s.dependency 'RxSwift', '~> 4.0.0'
 s.dependency 'Alamofire', '~> 4.5.1'
 s.dependency 'ObjectMapper', '~> 3.0.0'
 end
